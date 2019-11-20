@@ -337,17 +337,58 @@ function animate() {
     }
 }
 
+
+
+
+var imagesLoaded = 0;
+function countImagesLoaded(images, texture,textureType){
+	print("counter function"); 
+	++imagesLoaded; 
+	if(imagesLoaded === 6){
+		print("all images loaded"); 
+
+		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture); 
+		for(var i =0; i<6; ++i){
+			gl.texImage2D(textureType[i],0,gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, images[i]);
+		}
+
+		if (
+			isPowerOf2(images[0].width) && isPowerOf2(images[0].height) &&
+			isPowerOf2(images[1].width) && isPowerOf2(images[1].height) &&
+			isPowerOf2(images[2].width) && isPowerOf2(images[2].height) &&
+			isPowerOf2(images[3].width) && isPowerOf2(images[3].height) &&
+			isPowerOf2(images[4].width) && isPowerOf2(images[4].height) &&
+			isPowerOf2(images[5].width) && isPowerOf2(images[5].height)
+		) 
+		{
+			print("power of 2 image loaded")
+			// Yes, it's a power of 2. Generate mips.
+			gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+			// gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R,gl.CLAMP_TO_EDGE);
+		} else {
+			console.log("Loaded non-power of 2 texture");
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		}
+	}
+}
+
+
 /**
 * Function to setup the cubemap texture for the skybox and teapot.
 * @return None
 */
 function setupCubeMap() {
     // TODO: Initialize the Cube Map, and set its parameters
-    // See usage of gl.createTexture
-	
+	// See usage of gl.createTexture
+
 	// TODO: Set texture parameters
 	// See uage of gl.texParameteri
-
     
  	// TODO: Bind the images to each side of the cubemap
  	// Images are in folder "skybox"
@@ -355,7 +396,46 @@ function setupCubeMap() {
  	// Note that you are free to define new functions. If you write everything 
  	// in this function, it may get too long and contain a lot of duplicated 
  	// code. In such case, consider extract same code into new your function.
+
+	cubeTexture = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeTexture);
+
+	var type = gl.UNSIGNED_BYTE;
+	var pixel = new Uint8Array([0, 0, 255, 255]);
+	var textureType = [
+		gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+		gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+		gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+		gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+		gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+	]; 
+
+	for(var i = 0; i<6; ++i){
+		gl.texImage2D(textureType[i], 0, gl.RGBA, 1, 1, 0, gl.RGBA, type, pixel); 
+	}
+
+	var imagePaths = [ 
+		"skybox/pos-x.png",
+		"skybox/neg-x.png",
+		"skybox/pos-y.png",
+		"skybox/neg-y.png",
+		"skybox/pos-z.png",
+		"skybox/neg-z.png",
+	];
+
+	var images = []
+	for(var i = 0; i<6; ++i){
+		images[i] = new Image(); 
+		images[i].onload = function() {countImagesLoaded(images, cubeTexture, textureType);}
+		images[i].src = imagePaths[i]; 
+	}
+
+
+
+
 }
+
 
 /**
 * Function to verify if a value is a power of 2 or not
@@ -399,3 +479,7 @@ function tick() {
     animate();
 }
 
+
+function print(msg){
+	console.log(msg);
+}
