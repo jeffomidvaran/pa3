@@ -98,16 +98,16 @@
 
 		if(uIsSkybox == 0.0)
 		{
-			// vec3 worldNormal = normalize(vVertexNormal); 
-			// vec3 eyeToSurfaceDir = normalize(vVertexPosition - viewDir); 
-			// vec3 direction = -reflect(eyeToSurfaceDir,worldNormal); 
-			// gl_FragColor = textureCube(uSampler, direction); 
+			// I thought it looked better without adding vColor
+			// gl_FragColor =  vColor + textureCube(uSampler, reflect(viewDir, vVertexNormal)); 
+			gl_FragColor =  textureCube(uSampler, reflect(viewDir, vVertexNormal)); 
 
-			gl_FragColor = textureCube(uSampler, vVertexNormal); 
 		}
 		else
 		{
-			gl_FragColor = textureCube(uSampler, vVertexPosition.xyz); 
+			// I thought it looked better without adding vColor
+			// gl_FragColor = vColor +  textureCube(uSampler, vVertexPosition.xyz); 
+			gl_FragColor =  textureCube(uSampler, vVertexPosition.xyz); 
 		}
 	}
 </script>

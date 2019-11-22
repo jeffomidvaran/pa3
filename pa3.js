@@ -368,7 +368,7 @@ function countImagesLoaded(images, texture,textureType){
 			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
 			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-			// gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R,gl.CLAMP_TO_EDGE);
+
 		} else {
 			console.log("Loaded non-power of 2 texture");
 			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -430,10 +430,6 @@ function setupCubeMap() {
 		images[i].onload = function() {countImagesLoaded(images, cubeTexture, textureType);}
 		images[i].src = imagePaths[i]; 
 	}
-
-
-
-
 }
 
 
